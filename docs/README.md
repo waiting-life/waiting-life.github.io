@@ -5,7 +5,7 @@ heroText: 怂怂
 tagline: 用技术为体验提供无限可能
 actions:
   - text: 马上进入 →
-    link: '/front_basic/'
+    link: '/front_basic/es6学习笔记.html'
 # features:
 #   - title: 专业
 #     details:

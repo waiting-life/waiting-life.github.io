@@ -8,9 +8,9 @@
   "private": false,
   "scripts": {
     "dev": "yarn docs:dev",
-    "docs:dev": "nodemon --watch docs bin/sidebar.js & vuepress dev docs",
-    "docs:build": "node bin/sidebar.js & vuepress build docs",
-    "deploy": "yarn docs:build && yarn oss",
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs",
+    "deploy": "yarn docs:build",
     "check": "prettier --check . --ignore-path .gitignore",
     "prepare": "husky install"
   },
