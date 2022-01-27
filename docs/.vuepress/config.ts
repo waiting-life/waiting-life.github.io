@@ -7,8 +7,8 @@ import themeConf from './theme/themeConf'
 export default defineUserConfig<DefaultThemeOptions, BundlerConfig>({
   base: '/',
   lang: 'zh-CN',
-  title: '百达屋大前端团队', // 显示在左上角的网页名称以及首页在浏览器标签显示的title名称
-  description: '大前端，web，nodejs，全栈', // meta 中的描述文字，用于SEO
+  title: '怂怂', // 显示在左上角的网页名称以及首页在浏览器标签显示的title名称
+  description: '前端学习', // meta 中的描述文字，用于SEO
   // 注入到当前页面的 HTML <head> 中的标签
   head: [
     [

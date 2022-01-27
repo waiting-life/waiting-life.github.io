@@ -1,5 +1,4 @@
-const fabric = require('@bdwjs/prettier-config')
-
 module.exports = {
-  ...fabric,
+  semi: false,
+  singleQuote: true,
 }
