@@ -1,15 +1,15 @@
 {
   "name": "docs",
   "version": "1.0.0",
-  "description": "Betterwood frontend docs.",
+  "description": "前端学习",
   "main": "index.js",
   "author": "Incep-3",
   "license": "MIT",
   "private": false,
   "scripts": {
     "dev": "yarn docs:dev",
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs",
+    "docs:dev": "nodemon --watch docs bin/sidebar.js & vuepress dev docs",
+    "docs:build": "node bin/sidebar.js & vuepress build docs",
     "deploy": "yarn docs:build",
     "check": "prettier --check . --ignore-path .gitignore",
     "prepare": "husky install"
