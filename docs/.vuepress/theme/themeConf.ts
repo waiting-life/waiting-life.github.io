@@ -4,11 +4,6 @@ const nav = [
   {
     text: '前端基础',
     link: '/front_basic/',
-    // children: [
-    //   { text: 'Es6', link: '/front_basic/es6学习笔记.html' },
-    //   { text: 'Html', link: '/front_basic/html学习.html' },
-    //   { text: 'Jsx', link: '/front_basic/jsx学习.html' },
-    // ],
   },
 ]
 
