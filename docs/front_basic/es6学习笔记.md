@@ -15,8 +15,6 @@ let 关键字：块级作用域，暂时性死区（在声明前引用这个值�
 
 const 关键字，类似于 let，用于定义常量，不允许重复赋值
 
-<img src="D:\工作日报\工作日报5\定义变量.png" alt="定义变量" style="zoom:50%;" />
-
 大部分情况下使用 const
 
 确实需要重复赋值，使用 let
@@ -51,9 +49,9 @@ this：执行环境
 
 函数的方法：bind(),接受一个对象或者一个环境，会返回一个新的函数，可以改变函数的 this 指向
 
-​ apply(),传参是一个数组
+apply(),传参是一个数组
 
-​ call()，传参是一个一个
+call()，传参是一个一个
 
 map()方法返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值
 
@@ -116,12 +114,6 @@ arr.fill('lovecpp')//用这个字符串填充这个数组
 includes()
 
 arr.flat()将数组打平，参数是打平的最大层级
-
-<img src="D:\工作日报\工作日报5\flat.png" alt="flat" style="zoom:67%;" />
-
-<img src="D:\工作日报\工作日报5\es6方法.png" alt="es6方法" style="zoom:67%;" />
-
-<img src="D:\工作日报\工作日报5\assign.png" alt="assign" style="zoom:60%;" />
 
 Object.assign 会更改第一个参数，后面的参数会往第一个参数填充
 
