@@ -1,0 +1,44 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "Betterwood frontend docs.",
+  "main": "index.js",
+  "author": "Incep-3",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "dev": "yarn docs:dev",
+    "docs:dev": "nodemon --watch docs bin/sidebar.js & vuepress dev docs",
+    "docs:build": "node bin/sidebar.js & vuepress build docs",
+    "mdToPdf": "node bin/mdToPdf.mjs",
+    "deploy": "yarn docs:build && yarn oss",
+    "check": "prettier --check . --ignore-path .gitignore",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@bdwjs/commitlint-config": "^1.1.0",
+    "@bdwjs/prettier-config": "^1.1.0",
+    "@betterwood/ali-oss": "^1.0.4",
+    "@vue/component-compiler-utils": "^3.3.0",
+    "@vuepress/plugin-search": "^1.8.2",
+    "@vuepress/shared-utils": "^1.8.2",
+    "bluebird": "^3.7.2",
+    "ejs": "^3.1.6",
+    "fs-extra": "^10.0.0",
+    "highlight.js": "^11.4.0",
+    "husky": ">=6",
+    "lint-staged": ">=10",
+    "md-to-pdf": "^5.0.1",
+    "nodemon": "^2.0.15",
+    "ora": "^6.0.1",
+    "prettier": "2.5.1",
+    "remarkable": "^2.0.1",
+    "remarkable-classy": "^0.0.1",
+    "rimraf": "^3.0.2",
+    "tracer": "^1.1.5",
+    "vuepress": "^2.0.0-beta.29"
+  },
+  "lint-staged": {
+    "**/*{md,ts,js}": "prettier --check . --ignore-path .gitignore"
+  }
+}
