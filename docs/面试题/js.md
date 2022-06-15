@@ -136,9 +136,9 @@ then的链式调用：用 Promise 的时候，当 then 函数中 return 了一�
 then和catch参数期望值是函数，当不是函数时，会出现值穿透，也就是会保存上一个promise.data,每次无效的then所返回的promise状态都为resolved
 ```js
 new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve('hello')
-        }, 1000)
+    setTimeout(() => {
+        resolve('hello')
+    }, 1000)
 }).then(1)
   .then(2)
   .then(Promise.resolve(3))
@@ -172,6 +172,9 @@ Promise.resolve().then(() => {
 
 
 4. 对Promise的理解，与async、await的区别，async、await是怎么实现的
+4. Promise.resolve(v)与new Promise(resolve => resolve())
+
+
 
 ### Es6
 1. 解构赋值，如果没有找到，会返回什么
@@ -180,4 +183,195 @@ Promise.resolve().then(() => {
 
 3. es6新特性有哪些，组合式API
 
-4. 
+4. 宏任务微任务
+
+**练习一**
+```js
+new Promise((r) => {
+    r();
+})
+.then(() => console.log(1))
+.then(() => console.log(2))
+.then(() => console.log(3))
+new Promise((r) => {
+    r();
+})
+.then(() => console.log(4))
+.then(() => console.log(5))
+.then(() => console.log(6))
+// 1 4 2 5 3 6
+```
+**l练习二**
+
+```js
+Promise.resolve().then(() => {
+  console.log(0);
+  // 两次微任务
+  return Promise.resolve(4)
+}).then(res => {
+  console.log(res)
+})
+
+Promise.resolve().then(() => {
+  console.log(1);
+}).then(() => {
+  console.log(2);
+}).then(() => {
+  console.log(3);
+}).then(() => {
+  console.log(5);
+}).then(() =>{
+  console.log(6);
+})
+// 0
+// 1
+// 2
+// 3
+// 4
+// 5
+// 6
+```
+
+
+
+**练习三**
+
+```js
+async function async1() {
+    console.log('async1 start')
+    await async2()
+    console.log('async1 end')
+}    
+async function async2() {
+    console.log('async2')
+}  
+async1();    
+new Promise((resolve) => {
+    console.log(1)
+    resolve()
+}).then(() => {
+    console.log(2)
+}).then(() => {
+    console.log(3)
+}).then(() => {
+    console.log(4)
+})
+// async1 start
+// async2
+// 1
+// async1 end
+// 2
+// 3
+// 4
+```
+
+**练习四**
+
+配合`async await`
+
+```js
+async function async1() {
+  await async2();
+  console.log('async1 end');
+}
+// 当为async函数且return Promise时
+async function async2() {
+  return Promise.resolve()
+} // 额外创建了两个微任务
+
+async1();
+
+new Promise(function(resolve) {
+  resolve();
+}).then(function() {
+  console.log('promise2');
+}).then(function() {
+  console.log('promise3');
+}).then(function() {
+  console.log('promise4');
+}).then(function() {
+  console.log('promise5');
+})
+// promise2  
+// promise3  
+// async1 end 
+// promise4
+// promise5
+```
+
+**练习五**
+
+```js
+async function async1() {
+  console.log('async1 start');
+  await async2();
+  console.log('async1 end');
+}
+
+async function async2() {
+  console.log('async2 start');
+  return new Promise((resolve, reject) => {
+    resolve();
+    console.log('async2 promise');
+  })
+}
+
+console.log('script start');
+
+setTimeout(function() {
+  console.log('setTimeout');
+}, 0);
+
+async1();
+
+new Promise(function(resolve) {
+  console.log('promise1');
+  resolve();
+}).then(function() {
+  console.log('promise2');
+}).then(function() {
+  console.log('promise3');
+}).then(function() {
+  console.log('promise4')
+});
+
+console.log('script end');
+
+// script start
+// async1 start
+// async2 start
+// async2 promise
+// promise1
+// script end'
+// promise2
+// promise3
+// async1 end
+// promise4
+// setTimeout
+```
+
+
+
+**练习六**
+
+```js
+const promise = new Promise((resolve, reject) => {
+  console.log(1);
+  setTimeout(() => {
+    console.log("timerStart");
+    resolve("success");
+    console.log("timerEnd");
+  }, 0);
+  console.log(2);
+});
+promise.then((res) => {
+  console.log(res);
+});
+console.log(4);
+// 1
+// 2
+// 4
+// timerStart
+// timerEnd
+// success
+```

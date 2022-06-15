@@ -15,7 +15,7 @@
 const sidebars = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
   tutorialSidebar: [
-    "HTML",
+    "HTML和CSS",
     {
       type: 'category',
       label: 'JavaScript',
@@ -34,7 +34,6 @@ const sidebars = {
       },
       items: ['react/ReactHooks', 'react/Redux'],
     },
-    "排序算法",
     {
       type: 'category',
       label: 'TypeScript',
@@ -57,7 +56,16 @@ const sidebars = {
     },
    "前端安全",
    "webpack",
-   "leetcode",
+   "Git",
+   {
+    type: 'category',
+    label: '算法',
+    link: {
+      type: 'doc',
+      id: '算法/基础练习',
+    },
+    items: ['算法/基础练习', '算法/排序算法', '算法/二叉树'],
+  },
    {
       type: 'category',
       label: '面试题总结',
@@ -72,9 +80,9 @@ const sidebars = {
       label: '面试题',
       link: {
         type: 'doc',
-        id: '面试题/html',
+        id: '面试题/HTML和CSS',
       },
-      items: ['面试题/html', '面试题/css', '面试题/js', '面试题/react','面试题/ts', '面试题/浏览器计算机网络相关','面试题/前端安全','面试题/webpack','面试题/算法'],
+      items: ['面试题/HTML和CSS', '面试题/js', '面试题/react','面试题/ts', '面试题/浏览器计算机网络相关','面试题/前端安全','面试题/webpack','面试题/算法'],
     },
   ],
 
