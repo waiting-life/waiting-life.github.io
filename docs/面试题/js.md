@@ -461,28 +461,6 @@ function arrToTree1(arr) {
 }
 ```
 
-**含有多个根节点并且将树结构放在对象中**
-
-```js
-function arrToTree(arr) {
-    let result = {}
-    let m = {}
-    arr.forEach(item => {
-         m[item.id] = item   
-    })
-    arr.forEach(item => {
-         let parent = m[item.parent]
-         if(parent) {
-             (parent.children||(parent.children=[])).push(item)
-         } else {
-            result[item.id] = item
-         }
-    })
-    return result
-}
-arrayToTree(oriArray)
-```
-
 **只有一个根节点**
 
 ```js

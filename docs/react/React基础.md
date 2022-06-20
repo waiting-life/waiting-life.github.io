@@ -80,3 +80,50 @@ HOC 通过将组件*包装*在容器组件中来*组成*新组件。HOC 是纯�
 
 ### Portals
 
+传送门
+
+#### 用法
+
+一般用于创建Modal
+
+**render到一个组件里面去，实际改变的是网页上另一处的DOM结构**。
+
+```tsx
+// MyModal
+import { createPortal } from 'react-dom'
+
+const element = document.querySelector('#root') as Element
+const MyModal = ({visible} : {visible: boolean}) => {
+  if(!visible) return null
+  return createPortal(
+    <div style={{ background: 'pink', width: 400, height: 400}}>
+        <h2>modal</h2>
+    </div>,
+    element
+  )
+}
+export default  MyModal
+
+
+// PortalCom
+import { Button } from 'antd'
+import { useState } from 'react'
+import MyModal from '../../../components/MyModal'
+
+export default function PortalCom() {
+  const [visible, setVisible] = useState(false)
+  return (
+    <div>
+        <h2>Portal</h2>
+        <Button onClick={() => setVisible(true)}>打开MyModal</Button>
+        <MyModal visible={visible}/>
+    </div>
+  )
+}
+```
+
+#### 通过Portal进行事件冒泡
+
+尽管 portal 可以被放置在 DOM 树中的任何地方，但在任何其他方面，其行为和普通的 React子节点行为一致。
+
+一个从 portal 内部触发的事件会一直冒泡至包含 *React 树*的祖先

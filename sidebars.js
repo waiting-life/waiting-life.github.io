@@ -23,7 +23,7 @@ const sidebars = {
         type: 'doc',
         id: 'javascript/基础',
       },
-      items: ['javascript/基础', 'javascript/数组', 'javascript/对象', 'javascript/函数', 'javascript/ES6', 'javascript/js基础'],
+      items: ['javascript/基础', 'javascript/数组', 'javascript/对象', 'javascript/函数', 'javascript/ES6', 'javascript/手写实现归纳'],
     },
     {
       type: 'category',

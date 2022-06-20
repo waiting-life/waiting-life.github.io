@@ -113,13 +113,58 @@ export default forwardRef(FancyInput)
 
 ### React.Fragment
 
-## Supense
+`React.Fragment` 组件能够在不额外创建 DOM 元素的情况下，让 `render()` 方法中返回多个元素。
+
+```tsx
+const HelloCom= () => {
+  return (
+    <React.Fragment>
+      <td>Hello</td>
+      <td>World</td>
+    <React.Fragment/>
+  );
+}
+```
+
+### 短语法
+
+```tsx
+const HelloCom= () => {
+  return (
+    <>
+      <td>Hello</td>
+      <td>World</td>
+    </>
+  );
+}
+```
 
 ### React.Lazy
 
+`React.lazy()` 允许你定义一个动态加载的组件。这有助于缩减 bundle 的体积，并延迟加载在初次渲染时未用到的组件。
+
+```tsx
+// 这个组件是动态加载的
+const SomeComponent = React.lazy(() => import('./SomeComponent'));
+```
+
 ### React.Suspense
 
+懒加载组件是 `<React.Suspense>` 支持的唯一用例
 
+```tsx
+// 该组件是动态加载的
+const OtherComponent = React.lazy(() => import('./OtherComponent'));
 
-
+function MyComponent() {
+  return (
+    // 显示 <Spinner> 组件直至 OtherComponent 加载完成
+    <React.Suspense fallback={<Spinner />}>
+      <div>
+        <OtherComponent />
+      </div>
+    </React.Suspense>
+  );
+}
+```
 
