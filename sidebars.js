@@ -30,9 +30,9 @@ const sidebars = {
       label: 'React',
       link: {
         type: 'doc',
-        id: 'react/ReactHooks',
+        id: 'react/React基础',
       },
-      items: ['react/ReactHooks', 'react/Redux'],
+      items: ['react/React基础', 'react/ReactAPI', 'react/ReactHooks', 'react/Redux'],
     },
     {
       type: 'category',
@@ -64,17 +64,17 @@ const sidebars = {
       type: 'doc',
       id: '算法/基础练习',
     },
-    items: ['算法/基础练习', '算法/排序算法', '算法/二叉树'],
+    items: ['算法/基础练习', '算法/排序算法', '算法/二叉树', '算法/链表'],
   },
-   {
-      type: 'category',
-      label: '面试题总结',
-      link: {
-        type: 'doc',
-        id: '面试题总结/牛客网面试题',
-      },
-      items: ['面试题总结/牛客网面试题', '面试题总结/面试题'],
+  {
+    type: 'category',
+    label: '面经总结',
+    link: {
+      type: 'doc',
+      id: '面经总结/Ones',
     },
+    items: ['面经总结/Ones'],
+  },
    {
       type: 'category',
       label: '面试题',

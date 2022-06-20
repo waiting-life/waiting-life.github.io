@@ -96,7 +96,10 @@ function Child() {
 ```
 
 ## useEffect
+与componentDisMount和componentDisUpdate不同的是，传给useEffect的函数会在浏览器完成布局与绘制之后，在一个延迟时间中被调用。
+
 可以通过useEffec来实现一些生命周期的功能，组件挂在，组件更新，组件卸载
+
 ### 练习一
 ```tsx
 export default function UseEffectCom() {
@@ -247,9 +250,13 @@ export default function UseCallbackCom() {
 ```
 ## useContext
 `useContext(MyContext)`只是让你能够读取 `context` 的值以及订阅 `context` 的变化。你仍然需要在上层组件树中使用 `<MyContext.Provider>` 来为下层组件提供 `context`。
+
+`useContext` 的参数必须是 *context 对象本身*：
+
 :::tip
 需要注意的是，一旦我们组件使用了`useContext()`，那么一旦`Provider`传递的`value`地址发生了改变，就会触发我们组件的重新渲染。
 :::
+
 ### 练习一
 ```tsx
 import React, {useContext} from 'react'
@@ -264,7 +271,7 @@ const themes = {
     background: "#222222"
   }
 };
-// 为当前的theme创建一个context
+// 为当前的theme创建一个context对象
 const ThemeContext = React.createContext(themes.light)
 
 export default function UseContextCom() {
@@ -282,6 +289,7 @@ function ToolBar() {
 }
 
 function ThemeButton() {
+  // useContext接受context对象作为参数
   const theme = useContext(ThemeContext)
   return <button style={{background: theme.background, color: theme.foreground}}>thmeme</button>
 }

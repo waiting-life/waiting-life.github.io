@@ -201,7 +201,7 @@ new Promise((r) => {
 .then(() => console.log(6))
 // 1 4 2 5 3 6
 ```
-**l练习二**
+**练习二**
 
 ```js
 Promise.resolve().then(() => {
@@ -375,3 +375,172 @@ console.log(4);
 // timerEnd
 // success
 ```
+### 手写实现题
+
+**1. 数组转树**
+
+**源数据**
+
+```js
+let oriArray = [
+    {
+        id: 4, text: '第四条',
+    },
+    {
+        id: 2, text: '第二条', parent: 3
+    },
+    {
+        id: 3, text: '第三条',
+    },
+    {
+        id: 6, text: '第六条', parent: 5
+    },
+    {
+        id: 5, text: '第五条', parent: 1,
+    },
+    {
+        id: 1, text: '第一条', parent: 3
+    },
+]
+```
+
+**含有多个根节点，并且将树结构放在数组中**
+
+```js
+// 方法一
+function arrayToTree(arr) {
+    const arr1 = [], arr2 = [], obj = {}
+    for(let i = 0; i < arr.length; i++) {
+        let item = arr[i]
+        if(arr[i].parent) {
+            arr2.push(item)
+        } else {
+            arr1.push(item)
+            obj[item.id] = item
+        }
+    }
+    let count = 0
+    while(count < arr2.length) {
+        console.log(1)
+        for(let i = 0; i < arr2.length; i++) {
+            const item = arr2[i]
+            const parent = obj[item.parent]
+            if(!obj[item.id]) {
+                if(parent) {
+                    if(parent.children) {
+                        parent.children.push(item)
+                    } else {
+                        parent.children = [item]
+                    }
+                    count++
+                    obj[item.id] = item
+                }
+            } 
+        }
+    }
+    return arr1
+}
+arrayToTree(oriArray)
+
+// 方法二
+function arrToTree1(arr) {
+    let result = []
+    let m = {}
+    arr.forEach(item => {
+         m[item.id] = item   
+    })
+    arr.forEach(item => {
+         let parent = m[item.parent]
+         if(parent) {
+             (parent.children||(parent.children=[])).push(item)
+         } else {
+            result.push(item)
+         }
+    })
+    return result
+}
+```
+
+**含有多个根节点并且将树结构放在对象中**
+
+```js
+function arrToTree(arr) {
+    let result = {}
+    let m = {}
+    arr.forEach(item => {
+         m[item.id] = item   
+    })
+    arr.forEach(item => {
+         let parent = m[item.parent]
+         if(parent) {
+             (parent.children||(parent.children=[])).push(item)
+         } else {
+            result[item.id] = item
+         }
+    })
+    return result
+}
+arrayToTree(oriArray)
+```
+
+**只有一个根节点**
+
+```js
+const nodes = [
+  { id: 3, name: '节点C', parentId: 1 },
+  { id: 6, name: '节点F', parentId: 3 },
+  { id: 0, name: 'root', parentId: null },
+  { id: 1, name: '节点A', parentId: 0 },
+  { id: 8, name: '节点H', parentId: 4 },
+  { id: 4, name: '节点D', parentId: 1 },
+  { id: 2, name: '节点B', parentId: 0 },
+  { id: 5, name: '节点E', parentId: 2 },
+  { id: 7, name: '节点G', parentId: 2 },
+  { id: 9, name: '节点I', parentId: 5 }
+];
+
+function arrToTree(arr) {
+    let m = {}
+    let result
+    arr.forEach(item => {
+        m[item.id] = item   
+    })
+    // {0: {}, 1: {}, 2: {},...}
+    arr.forEach(item => {
+        let parent = m[item.parentId]
+        if(parent) {
+            (parent.children||(parent.children = [])).push(item)
+        } else {
+            result = item
+        }
+    })
+    return result
+}
+```
+
+
+
+**2. 求两个日期中间的有效日期**
+
+ in：2020-9-29，2020-10-3
+ out：['2020-9-29','2020-9-30','2020-10-1','2020-10-2','2020-10-3']
+
+```js
+function rangeDay(day1, day2) {
+    const result = []
+    const dayTime = 24*60*60*1000
+    const startTime = new Date(day1).getTime()
+    const endTime = new Date(day2).getTime()
+    const rangeTime = endTime - startTime
+    
+    let total = 0
+    while(total<=rangeTime && rangeTime>0) {
+        result.push(new Date(startTime+total).toLocaleDateString().replace(/\//g, '-'))
+        total+=dayTime
+    }
+    return result
+}
+rangeDay('2022-1-2', '2022-2-1')
+// ['2022-1-2', '2022-1-3', '2022-1-4', '2022-1-5', '2022-1-6', '2022-1-7', '2022-1-8', '2022-1-9', '2022-1-10', '2022-1-11', '2022-1-12', '2022-1-13', '2022-1-14', '2022-1-15', '2022-1-16', '2022-1-17', '2022-1-18', '2022-1-19', '2022-1-20', '2022-1-21', '2022-1-22', '2022-1-23', '2022-1-24', '2022-1-25', '2022-1-26', '2022-1-27', '2022-1-28', '2022-1-29', '2022-1-30', '2022-1-31', '2022-2-1']
+```
+
