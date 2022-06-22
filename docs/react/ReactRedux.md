@@ -595,3 +595,26 @@ const App = () => {
 
 export default App;
 ```
+
+### hooks
+
+#### useSelector
+
+```tsx
+import { useSelector } from "react-redux";
+
+const user = useSelector((state: any) => state.user);
+```
+
+#### useStore
+
+
+
+#### useDispatch
+
+```tsx
+import { useDispatch } from "react-redux";
+
+const dispatch = useDispatch();
+```
+

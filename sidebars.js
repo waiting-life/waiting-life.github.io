@@ -32,7 +32,7 @@ const sidebars = {
         type: 'doc',
         id: 'react/React基础',
       },
-      items: ['react/React基础', 'react/ReactAPI', 'react/ReactHooks', 'react/Redux'],
+      items: ['react/React基础', 'react/ReactAPI', 'react/ReactHooks', 'react/ReactRedux'],
     },
     {
       type: 'category',
@@ -57,6 +57,7 @@ const sidebars = {
    "前端安全",
    "webpack",
    "Git",
+   "qiankun",
    {
     type: 'category',
     label: '算法',
