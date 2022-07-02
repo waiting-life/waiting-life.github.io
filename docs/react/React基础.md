@@ -127,3 +127,227 @@ export default function PortalCom() {
 尽管 portal 可以被放置在 DOM 树中的任何地方，但在任何其他方面，其行为和普通的 React子节点行为一致。
 
 一个从 portal 内部触发的事件会一直冒泡至包含 *React 树*的祖先
+
+### 函数式组件和类组件
+
+#### 函数式组件和类组件区别
+
+**父组件：Profile**
+
+```tsx
+export default class Profile extends Component {
+  state = {
+    user: 'Dan'
+  }
+
+  render() {
+    return (
+      <>
+        <label>
+          <b>Choose profile to view: </b>
+          <select
+            value={this.state.user}
+            onChange={e => this.setState({ user: e.target.value })}
+          >
+            <option value="Dan">Dan</option>
+            <option value="Sophie">Sophie</option>
+            <option value="Sunil">Sunil</option>
+          </select>
+        </label>
+        <h1>Welcome to {this.state.user}’s profile!</h1>
+        <p>
+          <PageFunction user={this.state.user} />
+          <b> (function)</b>
+        </p>
+        <p>
+            {/* @ts-ignore */}
+          <PageClass user={this.state.user} />
+          <b> (class)</b>
+        </p>
+        <p>
+          Can you spot the difference in the behavior?
+        </p>
+      </>
+    )
+  }
+}
+```
+
+
+
+**函数式组件: PageFunction**
+
+当我们点击了按钮之后再选中Sophie会在三秒之后会输出我们点击的时候的Dan。这是符合我们预期的。
+
+```tsx
+export default function PageFunction(props: any) {
+  const { user } = props
+  const showMessage = () => {
+    alert(`Followed  ${user}`)
+  }
+  const handleClick = () => {
+    setTimeout(showMessage, 3000)
+  }
+  return (
+    <Button onClick={handleClick}>Follow</Button>
+  )
+}
+```
+
+**类组件：PageClass**
+
+当我们点击了按钮之后再选中Sophie会在三秒之后输出最新的Sophie，这不是我们想要的，我们想要在三秒后输出我们点击的时候的Dan。
+
+```tsx
+export default class PageClass extends Component {
+  showMessage = () => {
+    alert(`Followed ${this.props.user}`)
+  }
+
+  handleClick = () => { 
+    setTimeout(showMessage, 3000)
+  }
+  render() {
+    return (
+        <Button onClick={this.handleClick}>点击</Button>
+    )
+  }
+}
+```
+
+#### 在函数式组件中也可以通过ref获取到最新的值
+
+**如果我们想要读取并不属于这一次特定渲染的，而是最新的props和state**
+
++ 在类中，我们可以通过`this.state`或者`this.props`来实现。因为this本身是可变的。
++ 在函数式组件中，也可以拥有一个在所有的组件渲染帧中共享的可变变量。它被成为“ref”：
+
+```tsx
+export default function PageFunction(props: any) {
+  const [value, setValue] = useState()
+  const valRef = useRef()
+  const showLatestValue = () => {
+    alert(`followed ${valRef.current}`)
+  }
+  const handleChange = (e: any) => {
+    setValue(e.target.value)
+    valRef.current = e.target.value
+  }
+  const getLatestValue = () => {
+    setTimeout(showLatestValue, 3000)
+  }
+
+  const showValue = () => {
+    alert(`followed ${value}`)
+  }
+  const getValue = () => {
+    setTimeout(showValue, 3000)
+  }
+  return (
+    <>
+        <Input value={value} onChange={handleChange}/>
+        <Button onClick={getLatestValue}>获取最新value</Button>
+        <Button onClick={getValue}>获取value</Button>
+    </>
+  )
+}
+
+```
+
+### 类组件
+
+#### class: 类中的方法默认开启了局部严格模式
+
+```ts
+class Person {
+    constructor(name, age) {
+        this.name = name
+        this.age = age
+    }
+    // getName方法放在了哪里？——类的原型对象上，供实例使用。
+    // 通过Person实例调用getName时，getName中的this就是Person实例
+    getName() {
+        console.log(this)
+        console.log(this.name)
+    }
+}
+const p = new Person('cpp', 22)
+p.getName() // 通过实例调用getName方法
+
+// 类中所有定义的方法都在局部开启了严格模式，所以this为undefined
+// 所以上述getName相当于
+// function getName() {
+//     'use strict'
+//     console.log(this, this.name)
+// }
+const x = p.getName
+x()  // 函数的直接调用,因为类中定义的方法都在局部开启了严格模式，所以调用的时候读到的this是undefined不是Window实例对象
+
+function demo() {
+    console.log(this, 'demo') // Window实力对象
+}
+demo()
+
+function demo1() {
+    'use strict'
+    console.log(this)
+}
+demo1() // undefined
+```
+
+#### this
+
++ 类中声明的函数放在了类的原型对象上供实例使用
++ 点击按钮触发的函数调用是作为onClick的回调调用，是直接调用。
+
+```tsx
+export  class Person extends Component {
+    constructor(props: any) {
+        super(props)
+        this.state = { name: 'cpp' }
+        // 这里将绑定了this之后的handleChangeName赋值给了我们实例上的this.handleChangeName
+        // 点击按钮之后调用的handleChangeName是我们实例上的handleChangeName(原型链)
+        this.handleChangeName = this.handleChangeName.bind(this)
+    }
+    handleChangeName() {
+        // handleChangeName放在哪里？—— PageClass的原型对象上，供实例使用
+        // 由于handleChangeName是作为onClick的回调，不是通过实例调用的，是直接调用。
+        // 类中的方法默认开启了局部的严格模式，所以这里的this为undefined
+        console.log(this)
+    }
+  
+    render() {
+        return (
+            <>
+                {/* @ts-ignore  */}
+                <span>name: {this.state.name}</span>
+                <Button onClick={this.handleChangeName}>点击按钮修改名字</Button>
+            </>
+        )
+    }
+}
+```
+
+**精简上面代码**
+
+```tsx
+export  class Person extends Component {
+    state = { name: 'cpp'}
+  
+    // 这样的写法直接将handleChangeName放在了实例上
+  	handleChangeName = () => {
+        // 箭头函数没有this，这里的this为箭头函数外面作用域中的this，也就是实例对象
+        console.log(this) // Person实例
+    }
+    render() {
+        return (
+            <>
+                {/* @ts-ignore  */}
+                <span>name: {this.state.name}</span>
+                <Button onClick={this.handleChangeName}>点击按钮修改名字</Button>
+            </>
+        )
+    }
+}
+```
+

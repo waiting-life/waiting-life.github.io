@@ -1,4 +1,41 @@
+**1. es6新增特性**
+
+
+
+**2. let const `` 和 promise map的本质区别（babel角度）**
+
+
+
+**3. promise封装指定方法**
+
+
+
+**4. 事件循环**
+
+
+
+**5. 构造函数和原型对象**
+
+
+
+**6. new方法的实现**
+
+
+
+**7. call、apply、bind实现**
+
+
+
+**8. var相关代码输出题**
+
+
+
+**9. jsx怎么转换为js执行**
+
+
+
 ### bind call apply
+
 1. 手写bind call apply
 bind：
 ```js

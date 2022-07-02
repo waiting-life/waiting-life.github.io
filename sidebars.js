@@ -57,7 +57,6 @@ const sidebars = {
    "前端安全",
    "webpack",
    "Git",
-   "qiankun",
    {
     type: 'category',
     label: '算法',

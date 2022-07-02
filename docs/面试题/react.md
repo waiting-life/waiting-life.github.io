@@ -10,9 +10,14 @@
 
 
 **4. react生命周期**
-
-componentDidMount
-componentWillUnmount
++ constructor：组件挂载之前
++ getDerivedStateFromProps：在render方法之前调用，并且在初始挂载及后续更新时都会被调用。根据 shouldComponentUpdate() 的返回值，判断 React 组件的输出是否受当前 state 或 props 更改的影响。
++ shouldComponentUpdate
++ render
++ getSnapshotBeforeUpdate(): 在最近一次渲染输出（提交到 DOM 节点）之前调用
++ componentDidMount
++ componentDidUpdate()
++ componentWillUnmount
 
 **5. React16.8新增特性**
 hooks

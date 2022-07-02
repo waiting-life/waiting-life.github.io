@@ -10,6 +10,649 @@ console.log(`他的名字叫${name}`)
 ```
 ## Promise
 
+**1. Promise为我们解决了什么问题**
+
+在传统的异步编程中，如果异步之间存在依赖关系，就需要通过层层嵌套回调的方式满足这种依赖，如果嵌套层数过多，可读性和可以维护性都会变得很差，产生所谓的“回调地狱”，而 Promise 将嵌套调用改为链式调用，增加了可阅读性和可维护性。也就是说，Promise 解决的是异步编码风格的问题。
+
+### Promise实现
+
+#### 基础雏形
+
+```js
+const PENDING = 'pending'
+const FULLFILLED = 'fullfilled'
+const REJECTED = 'rejected'
+
+class Promise {
+    // 初始化状态
+    constructor(executor) {
+        this.state = PENDING
+        this.value = undefined
+        this.reason = undefined
+
+        let resolve = (value) => {
+            if(this.state === PENDING) {
+                this.state = FULLFILLED
+                this.value = value
+            }
+        }
+        let reject = (reason) => {
+            if(this.state === PENDING) {
+                this.state = REJECTED
+                this.reason = reason
+            }
+        }
+
+        try {
+            executor(resolve, reject)
+        } catch(err) {
+            reject(err)
+        }
+        
+    }
+    then(onFullfilled, onRejected) {
+        if(this.state === FULLFILLED) {
+            onFullfilled(this.value)
+        }
+        if(this.state === REJECTED) {
+            onRejected(this.reason)
+        }
+    }
+}
+
+// 测试异步没有反应
+const p = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve(333)
+    }, 3000)
+}).then((value) => {
+     cosnole.log(value)   
+})
+```
+
+#### 解决异步实现
+
+```js
+const PENDING = 'pending'
+const FULLFILLED = 'fullfilled'
+const REJECTED = 'rejected'
+
+class Promise {
+    // 初始化状态
+    constructor(executor) {
+        this.state = PENDING
+        this.value = undefined
+        this.reason = undefined
+
+        this.onResolvedCallbacks = []
+        this.onRejectedCallbacks = []
+
+        let resolve = (value) => {
+            if(this.state === PENDING) {
+                this.state = FULLFILLED
+                this.value = value
+                this.onResolvedCallbacks.forEach(fn => fn())
+            }
+        }
+        let reject = (reason) => {
+            if(this.state === PENDING) {
+                this.state = REJECTED
+                this.reason = reason
+                this.onRejectedCallbacks.forEach(fn => fn())
+            }
+        }
+
+        try {
+            executor(resolve, reject)
+        } catch(err) {
+            reject(err)
+        }
+        
+    }
+    then(onFullfilled, onRejected) {
+        if(this.state === FULLFILLED) {
+            onFullfilled(this.value)
+        }
+        if(this.state === REJECTED) {
+            onRejected(this.reason)
+        }
+
+        if(this.state === PENDING) {
+            this.onResolvedCallbacks.push(() => {
+                onFullfilled(this.value)
+            })
+            this.onRejectedCallbacks.push(() => {
+                onRejected(this.reason)
+            })
+        }
+    }
+}
+
+const p = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve(333)
+    }, 3000)
+}).then(value => {
+     console.log(value)   
+})
+
+// 333
+```
+
+
+
+#### 解决链式调用
+
+1. (then中传递的函数)判断成功和失败函数的返回结果
+2. 判断是不是promise，如果是promise，就采用它的状态。
+3. 如果不是promise直接将结果传递下去即可
+
+**考虑几种情况**
+
++ 情况一： then里面的是一个promise或者值
+
+```js
+const promise = new Promise((resolve, reject) => {
+     setTimeout(() => {
+         resolve(333)
+     }, 3000)   
+})
+
+let x = promise.then((value) => {
+     return new Promise((resolve, reject) => {
+          setTimeout(() => {
+              resolve([value, 222])
+          }, 2000)   
+     })   
+})
+x.then(value => {
+     console.log(value)  
+})
+```
+
+**实现**
+
+```js
+const PENDING = 'pending'
+const FULLFILLED = 'fullfilled'
+const REJECTED = 'rejected'
+
+function resolvePromise(x, promise2, resolve, reject) {
+    if(promise2 === x) {
+        return reject(new TypeError('Chaining cycle detected for promise #<Promise>'))
+    }
+    if(typeof x === 'object' && x !== null || typeof x === 'function') {
+        try {
+            // Let then be x.then
+            let then = x.then
+            if(typeof then === 'function') {  // 如果x.then为一个函数，认为x为一个promise
+                // first argument resolvePromise, and second argument rejectPromise
+                // 第一个参数为成功的promise，y => {} 第二个参数为失败的promise  r => {}
+                 then.call(x, y => {
+                    resolve(y) // 采用promise的成功结果，将值向下传递
+                 }, r => {
+                    reject(r)  // 采用失败结果向下传递
+                 })
+            } else {
+                // 说明x是一个普通的对象
+                resolve(x)
+            }
+        } catch (err) {
+            reject(err)
+        }
+    } else {
+        // 说明x是一个普通的值
+        resolve(x)
+    }
+}
+// 解决链式调用
+class Promise {
+    // 初始化状态
+    constructor(executor) {
+        this.state = PENDING
+        this.value = undefined
+        this.reason = undefined
+
+        this.onResolvedCallbacks = []
+        this.onRejectedCallbacks = []
+
+        let resolve = (value) => {
+            if(this.state === PENDING) {
+                this.state = FULLFILLED
+                this.value = value
+                this.onResolvedCallbacks.forEach(fn => fn())
+            }
+        }
+        let reject = (reason) => {
+            if(this.state === PENDING) {
+                this.state = REJECTED
+                this.reason = reason
+                this.onRejectedCallbacks.forEach(fn => fn())
+            }
+        }
+
+        try {
+            executor(resolve, reject)
+        } catch(err) {
+            reject(err)
+        }
+        
+    }
+    then(onFullfilled, onRejected) {
+        let promise2 =  new Promise((resolve, reject) => {
+            if(this.state === FULLFILLED) {
+                setTimeout(() => {
+                    let x = onFullfilled(this.value)
+                    resolvePromise(x, promise2, resolve, reject)  
+                }, 0)
+            }
+            if(this.state === REJECTED) {
+                setTimeout(() => {
+                    let x = onRejected(this.reason)
+                    resolvePromise(x, promise2, resolve, reject)
+                }, 0)
+            }
+    
+            if(this.state === PENDING) {
+                this.onResolvedCallbacks.push(() => {
+                    setTimeout(() => {
+                        let x = onFullfilled(this.value)
+                        resolvePromise(x, promise2, resolve, reject)  
+                    }, 0)
+                })
+                this.onRejectedCallbacks.push(() => {
+                    setTimeout(() => {
+                        let x = onRejected(this.reason)
+                        resolvePromise(x, promise2, resolve, reject)
+                    }, 0)
+                })
+            }
+        })
+        return promise2
+    }
+}
+
+const p = new Promise((resolve, reject) => {
+    resolve(100)
+})
+const promise2 = p.then((value) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve([value, 'hello'])
+        }, 3000)
+    })
+})
+promise2.then(value => {
+    console.log(value)
+})
+```
+
++ 情况二：then里面的返回的Promise对象resolve了一个Promise的情况下
+
+应该将then里面返回的Promise对象resolve的值传递给下一个then
+
+```js
+// then里面的返回的Promise对象resolve了一个Promise的时候
+const p3 = new Promise((resolve, reject) => {
+    resolve(200)
+})
+const promise3 = p3.then((value) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(new Promise((resolve, reject) => {
+                resolve([value, 'hello'])
+            }))
+        }, 3000)
+    })
+})
+promise3.then(value => {
+    console.log(value)
+})
+```
+
+**实现**
+
+```js
+const PENDING = 'pending'
+const FULLFILLED = 'fullfilled'
+const REJECTED = 'rejected'
+
+function resolvePromise(x, promise2, resolve, reject) {
+    if(promise2 === x) {
+        return reject(new TypeError('Chaining cycle detected for promise #<Promise>'))
+    }
+    if(typeof x === 'object' && x !== null || typeof x === 'function') {
+        try {
+            // Let then be x.then
+            let then = x.then
+            if(typeof then === 'function') {  // 如果x.then为一个函数，认为x为一个promise
+                // first argument resolvePromise, and second argument rejectPromise
+                // 第一个参数为成功的promise，y => {} 第二个参数为失败的promise  r => {}
+                 then.call(x, y => { // 这里的y可能还是一个Promise,递归知道解析出来的结果是一个普通值为止
+                    resolvePromise(y, promise2, resolve, reject) // 采用promise的成功结果，将值向下传递
+                 }, r => {
+                    reject(r)  // 采用失败结果向下传递
+                 })
+            } else {
+                // 说明x是一个普通的对象
+                resolve(x)
+            }
+        } catch (err) {
+            reject(err)
+        }
+    } else {
+        // 说明x是一个普通的值
+        resolve(x)
+    }
+}
+// 解决链式调用, resolve一个promise的时候
+class Promise {
+    // 初始化状态
+    constructor(executor) {
+        this.state = PENDING
+        this.value = undefined
+        this.reason = undefined
+
+        this.onResolvedCallbacks = []
+        this.onRejectedCallbacks = []
+
+        let resolve = (value) => {
+            if(this.state === PENDING) {
+                this.state = FULLFILLED
+                this.value = value
+                this.onResolvedCallbacks.forEach(fn => fn())
+            }
+        }
+        let reject = (reason) => {
+            if(this.state === PENDING) {
+                this.state = REJECTED
+                this.reason = reason
+                this.onRejectedCallbacks.forEach(fn => fn())
+            }
+        }
+
+        try {
+            executor(resolve, reject)
+        } catch(err) {
+            reject(err)
+        }
+        
+    }
+    then(onFullfilled, onRejected) {
+        let promise2 = new Promise((resolve, reject) => {
+            if(this.state === FULLFILLED) {
+                setTimeout(() => {
+                    let x = onFullfilled(this.value)
+                    resolvePromise(x, promise2, resolve, reject)  
+                }, 0)
+            }
+            if(this.state === REJECTED) {
+                setTimeout(() => {
+                    let x = onRejected(this.reason)
+                    resolvePromise(x, promise2, resolve, reject)
+                }, 0)
+            }
+    
+            if(this.state === PENDING) {
+                this.onResolvedCallbacks.push(() => {
+                    setTimeout(() => {
+                        let x = onFullfilled(this.value)
+                        resolvePromise(x, promise2, resolve, reject)  
+                    }, 0)
+                })
+                this.onRejectedCallbacks.push(() => {
+                    setTimeout(() => {
+                        let x = onRejected(this.reason)
+                        resolvePromise(x, promise2, resolve, reject)
+                    }, 0)
+                })
+            }
+        })
+        return promise2
+    }
+}
+
+const p3 = new Promise((resolve, reject) => {
+    resolve(200)
+})
+const promise3 = p3.then((value) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(new Promise((resolve, reject) => {
+                resolve([value, 'hello'])
+            }))
+        }, 3000)
+    })
+})
+promise3.then(value => {
+    console.log(value)
+})
+```
+
++ 情况三：直接resolve一个Promise的时候
+
+```js
+// 直接resolve一个Promise的时候
+// resolve一个Promise的时候，应该将这个Promise resolve的值传递给then
+const p = new Promise((resolve, reject) => {
+    resolve(new Promise((resolve, reject) => {
+        resolve(200)
+    }))
+})
+const promise = p.then((value) => {
+    console.log(value)
+})
+```
+
+**实现**
+
+```js
+const PENDING = 'pending'
+const FULLFILLED = 'fullfilled'
+const REJECTED = 'rejected'
+
+function resolvePromise(x, promise2, resolve, reject) {
+    if(promise2 === x) {
+        return reject(new TypeError('Chaining cycle detected for promise #<Promise>'))
+    }
+    if(typeof x === 'object' && x !== null || typeof x === 'function') {
+        let called
+        try {
+            // Let then be x.then
+            let then = x.then
+            if(typeof then === 'function') {  // 如果x.then为一个函数，认为x为一个promise
+                // first argument resolvePromise, and second argument rejectPromise
+                // 第一个参数为成功的promise，y => {} 第二个参数为失败的promise  r => {}
+                 then.call(x, y => { // 这里的y可能还是一个Promise,递归知道解析出来的结果是一个普通值为止
+                    if(!called) called = true
+                    resolvePromise(y, promise2, resolve, reject) // 采用promise的成功结果，将值向下传递
+                 }, r => {
+                    if(!called) called = true
+                    reject(r)  // 采用失败结果向下传递
+                 })
+            } else {
+                // 说明x是一个普通的对象
+                resolve(x)
+            }
+        } catch (err) {
+            if(!called) called = true
+            reject(err)
+        }
+    } else {
+        // 说明x是一个普通的值
+        resolve(x)
+    }
+}
+// 解决链式调用, resolve一个promise的时候
+class Promise {
+    // 初始化状态
+    constructor(executor) {
+        this.state = PENDING
+        this.value = undefined
+        this.reason = undefined
+
+        this.onResolvedCallbacks = []
+        this.onRejectedCallbacks = []
+
+        let resolve = (value) => {
+            if(this.state === PENDING) {
+                if(value instanceof Promise) {
+                    value.then(value => {
+                        resolve(value)
+                    }, err => {
+                        reject(err)
+                    })
+                } else {
+                    this.state = FULLFILLED
+                    this.value = value
+                    this.onResolvedCallbacks.forEach(fn => fn())
+                }
+                
+            }
+        }
+        let reject = (reason) => {
+            if(this.state === PENDING) {
+                this.state = REJECTED
+                this.reason = reason
+                this.onRejectedCallbacks.forEach(fn => fn())
+            }
+        }
+
+        try {
+            executor(resolve, reject)
+        } catch(err) {
+            reject(err)
+        }
+        
+    }
+    then(onFullfilled, onRejected) {
+        onFullfilled = typeof onFullfilled === 'function' ? onFullfilled : val => val
+        onRejected = typeof onRejected === 'function' ? onRejected : err => { throw err }
+
+        let promise2 = new Promise((resolve, reject) => {
+            if(this.state === FULLFILLED) {
+                setTimeout(() => {
+                    let x = onFullfilled(this.value)
+                    resolvePromise(x, promise2, resolve, reject)  
+                }, 0)
+            }
+            if(this.state === REJECTED) {
+                setTimeout(() => {
+                    let x = onRejected(this.reason)
+                    resolvePromise(x, promise2, resolve, reject)
+                }, 0)
+            }
+    
+            if(this.state === PENDING) {
+                this.onResolvedCallbacks.push(() => {
+                    setTimeout(() => {
+                        let x = onFullfilled(this.value)
+                        resolvePromise(x, promise2, resolve, reject)  
+                    }, 0)
+                })
+                this.onRejectedCallbacks.push(() => {
+                    setTimeout(() => {
+                        let x = onRejected(this.reason)
+                        resolvePromise(x, promise2, resolve, reject)
+                    }, 0)
+                })
+            }
+        })
+        return promise2
+    }
+}
+// resolve一个Promise的时候，应该将这个Promise resolve的值传递给then
+// const p = new Promise((resolve, reject) => {
+//     resolve(new Promise((resolve, reject) => {
+//         resolve(200)
+//     }))
+// })
+// p.then(value => {
+//     console.log(111)
+// })
+
+// const promise2 = p.then((value) => {
+//     return new Promise((resolve, reject) => {
+//         setTimeout(() => {
+//             resolve([value, 'hello'])
+//         }, 3000)
+//     })
+// })
+// promise2.then(value => {
+//     console.log(value)
+// })
+
+const p = new Promise((resolve, reject) => {
+    resolve(new Promise((resolve, reject) => {
+        resolve(200)
+    }))
+})
+const promise = p.then((value) => {
+    console.log(value)
+})
+
+const p3 = new Promise((resolve, reject) => {
+    resolve(200)
+})
+const promise3 = p3.then((value) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(new Promise((resolve, reject) => {
+                resolve([value, 'hello'])
+            }))
+        }, 3000)
+    })
+})
+promise3.then(value => {
+    console.log(value)
+})
+```
+
+### Promise测试
+
+**添加代码**：在我们实现的Promise里面添加
+
+```js
+Promise.defer = Promise.deferred = function() {
+    let dfd = {}
+    dfd.promise = new Promise((resolve, reject) => {
+        dfd.resolve = resolve
+        dfd.reject = reject
+    })
+    return dfd
+}
+
+module.exports = Promise
+```
+
+
+
+**安装**
+
+```bash
+git add promises-aplus-tests -D
+```
+
+**package.json**
+
+```json
+{
+  "devDependencies": {
+    "promises-aplus-tests": "^2.1.2"
+  },
+  "scripts": {
+    "test": "promises-aplus-tests 4.js"
+  }
+}
+```
+
+```bash
+# 执行
+yarn test
+```
+
+
+
 ### Promise.all实现
 ```js
 Promise._all = function(pArr) {

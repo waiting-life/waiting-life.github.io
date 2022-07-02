@@ -1,18 +1,147 @@
 ## HTML
 
+**1. HTML语义化**
+
+使用恰当的语义的HTML标签和CSS class等内容，让页面具有良好的语义和结构
+
++ 用适当的标签
++ 页面内容结构化
++ 无CSS也能进行网页阅读
++ 方便浏览器，搜索引擎SEO
+
+**2. HTML语义化在CSS加载前怎么保持网页完整结构**
+
+
+
+**3. HTML文档结构**
+
+
+
+**4. script标签放head和body中的区别**
+
 ## CSS
-### 1. position
+ **1. position**
 
-### 2. 行内块元素之间出现间隙的原因以及如何解决
+static： 静态定位是元素默认的定位方式，无定位的意思
 
-### 3. 行内元素设置padding有什么效果？
+relative： 相对定位，相对定位是元素在移动的时候，是相对于它原来的位置,原来标准流的位置还在
 
-### 4. transfrom
+absolute： 绝对定位是相对于最近已经定位的祖先元素来定位
 
-### 5.  什么是bfc
+fixed：固定定位。相对于浏览器的可视区域位置来定位。
+
+sticky：粘性定位。可以被认为是相对定位和固定定位的组合。等元素到我们设置的定位的位置时就不会再移动了。
+
+
+
+```css
+ body {
+    margin: 0;
+    padding: 0;
+}
+.parent1, .parent2 {
+    width: 400px;
+    height: 600px;
+}
+.parent1 {
+    position: relative;
+    top: 100px;
+    background-color: aquamarine;
+}
+.parent2 {
+    background-color: antiquewhite;
+}
+.child1 {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    background-color: antiquewhite;
+    width: 100px;
+    height: 100px;
+}
+.child2 {
+    position: fixed;
+    top: 40px;
+    height: 40px;
+    background-color: bisque;
+    width: 100px;
+    height: 100px;
+}
+.child3 {
+    position: sticky;
+    width: 50px;
+    height: 50px;
+    background-color: burlywood;
+    top: 20px;
+    left: 200px;
+}
+```
+
+```html
+<div class="parent1">
+  <div class="child1">child1</div>
+  <div class="child2">child2</div>
+  <div class="child3">child3</div>
+</div>
+<div class="parent2">
+  parent2
+</div>
+```
+
+
+
+**2. 行内块元素之间出现间隙的原因以及如何解决**
+
+元素标签之间换行空格等符号造成的。
+
+解决方法：将行内元素或者行内块元素标签写在同一行。
+
+**3. 行内元素设置padding有什么效果？**
+
+
+
+**4. transfrom**
+
+**transform**应用于元素的2D、3D转换。允许你旋转、缩放、倾斜、或者平移给定元素。
+
++ 移动： transform: translate(x, y)    translateX(x)     translateY(y)
++ 缩放： scale(x, y)    scaleX(x)   scaleY(y)
++ 旋转：rotate(angle)
++ 倾斜： skew(*x-angle*,*y-angle*)
+
+```csss
+transform: translate(100px, 100px) rotate(45deg) scale(2) skew(30deg, 20deg);
+```
+
+**5. css常用单位**
+
++ px
++ 百分比%
++ em，rem常见相对单位。
+  + em取决于父元素的字体大小
+  + rem是相对于根元素。
++ vw，vh
+  + 100vw为浏览器视窗宽度
+  + 100vh为浏览器视窗高度
+
+**6. rem适配**
+
+
+
+**7. flex**
+
+**容器属性**
+
+**项目属性**
+
+**8. **
+
+**5. 什么是bfc**
+
 **具有BFC特性的元素可以看作是隔离了的独立容器，容器里面的元素不会再布局上影响到外面的元素，并且BFC具有普通容器所没有的一些特性。**
 **触发BFC**：
 下列方式会创建块格式化上下文（BFC）
+
 + 根元素(HTML)
 + 浮动元素(float的值不为none)
 + 绝对定位元素(position的值为fixed或者absolute)
@@ -151,7 +280,7 @@
 </div>
 ```
 
-### 6. 伪类和伪元素
+##### **6. 伪类和伪元素**
 
 **伪类：**
 
