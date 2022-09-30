@@ -32,7 +32,7 @@ const sidebars = {
         type: 'doc',
         id: 'react/React基础',
       },
-      items: ['react/React基础', 'react/ReactAPI', 'react/ReactHooks', 'react/ReactRedux'],
+      items: ['react/React基础', 'react/ReactAPI', 'react/ReactHooks', 'react/ReactRedux', 'react/mobx'],
     },
     {
       type: 'category',
