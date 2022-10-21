@@ -489,6 +489,73 @@
     </div>
 </div>
 ```
+### CSS Modules
+
+#### 局部作用域
+
+css产生局部作用域的方法，就是使用一个独一无二的`class`名字,不会与重名。这就是CSS Modules的做法。
+
+#### 全局作用域
+
+CSS Modules允许使用`:global(.className)`的语法，声明一个全局规则。凡是这样声明的`class`，都不会被编译成哈希字符串。
+
+#### 显示的局部作用域语法
+
+`:local(.className)`等同于`.className`
+
+#### 定制哈希类名
+
+`css-loader`磨人的哈希算法是`[hash:base64]`，这会将`.title`编译成`._3zyde4l1yATCOkgn-DBWEL`这样的字符串。
+
+webpack.config.js中可以定制哈希字符串的格式
+
+```js
+module: {
+  loaders: [
+    // ...
+    {
+      test: /\.css$/,
+      loader: "style-loader!css-loader?modules&localIdentName=[path][name]---[local]---[hash:base64:5]"
+    },
+  ]
+}
+```
+
+### Class 的组合
+
+在CSS Modules中， 一个选择器可以继承另一个选择器的规则，这称为组合。
+
+**`.title`继承`.className`**
+
+```css
+
+.className {
+  background-color: blue;
+}
+
+.title {
+  composes: className;
+  color: red;
+}
+```
+
+**选择器也可以继承其他CSS文件里面的规则**
+
+**another.css**
+
+```css
+.className {
+  background-color: blue;
+}
+```
+
+```css
+.title {
+  composes: className from './another.css';
+  color: red;
+}
+```
+
 
 ### grid网格布局
 

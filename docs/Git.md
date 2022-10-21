@@ -27,6 +27,8 @@ git rebase <name>  # 变基，不会生成新的commit,head会指向当前分支
 
 git checkout -- test.js # 丢弃工作区中的修改
 
+git pull origin master将master分支拉到自己开发的分支上
+
 ```
 
 ## 解决冲突 

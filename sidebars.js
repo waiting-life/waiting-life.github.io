@@ -57,6 +57,7 @@ const sidebars = {
    "前端安全",
    "webpack",
    "Git",
+   "mock",
    {
     type: 'category',
     label: '算法',
