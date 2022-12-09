@@ -85,6 +85,15 @@ const sidebars = {
       },
       items: ['面试题/HTML和CSS', '面试题/js', '面试题/react','面试题/ts', '面试题/浏览器计算机网络相关','面试题/前端安全','面试题/webpack','面试题/算法'],
     },
+    {
+      type: 'category',
+      label: '工作总结',
+      link: {
+        type: 'doc',
+        id: '工作总结/summary-one',
+      },
+      items: ['工作总结/summary-one'],
+    },
   ],
 
   // But you can create a sidebar manually
